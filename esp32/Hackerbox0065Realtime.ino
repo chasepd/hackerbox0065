@@ -1,7 +1,3 @@
- // HackerBox 0065 Clock Demo for 64x32 LED Array
-// Adapted from SmartMatrix example file
-//
-
 #include <MatrixHardware_ESP32_V0.h>    
 #include <SmartMatrix.h>
 #include <WiFi.h>
