@@ -7,6 +7,7 @@ cg = CoinGeckoAPI()
 app = Flask(__name__)
 
 coin_data = {}
+coins_to_fetch = ["bitcoin", "ethereum", "litecoin", "monero"]
 
 #Credit for RepeatedTimer class goes to MestreLion from https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds
 class RepeatedTimer(object):
@@ -35,11 +36,9 @@ class RepeatedTimer(object):
         self.is_running = False
 
 def update_coin_data():
-    prices = cg.get_price(ids=['bitcoin', 'ethereum', 'litecoin', 'monero'], vs_currencies='usd')
-    coin_data['bitcoin'] = prices['bitcoin']['usd']
-    coin_data['ethereum'] = prices['ethereum']['usd']
-    coin_data['litecoin'] = prices['litecoin']['usd']
-    coin_data['monero'] = prices['monero']['usd']
+    prices = cg.get_price(ids=coins_to_fetch, vs_currencies='usd')
+    for coin in coins_to_fetch:
+        coin_data[coin] = prices[coin]['usd']
 
 @app.route("/<coin>")
 def getPrice(coin):
