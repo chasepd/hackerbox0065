@@ -7,7 +7,9 @@ My code for Hackerbox 0065 - Realtime. I created a cryptocurrency ticker:
 
 - 64x32 LED Matrix
 - ESP32
-- Battery Pack
+- ~~Battery Pack~~ (I originally used a battery pack, but this ate 4 AA batteries per day so I switched to outlet power)
+- 5V AC/DC Power Adapter capable of at least 2A
+- Power Connector to connect board to AC/DC adapter
 - Hackerbox 0065 Blaster
 
 The blaster shield is optional, you could make this without it with some extra wiring. See [https://www.instructables.com/HackerBox-0065-Realtime/](https://www.instructables.com/HackerBox-0065-Realtime/) for details on what the blaster actually does.
