@@ -7,7 +7,7 @@ cg = CoinGeckoAPI()
 app = Flask(__name__)
 
 coin_data = {}
-coins_to_fetch = ["bitcoin", "ethereum", "litecoin", "monero"]
+coins_to_fetch = ["bitcoin", "ethereum", "litecoin", "monero", "dogecoin", "cardano", "tezos", "stellar"]
 
 #Credit for RepeatedTimer class goes to MestreLion from https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds
 class RepeatedTimer(object):

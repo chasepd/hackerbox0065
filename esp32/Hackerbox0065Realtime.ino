@@ -1,3 +1,7 @@
+ // HackerBox 0065 Clock Demo for 64x32 LED Array
+// Adapted from SmartMatrix example file
+//
+
 #include <MatrixHardware_ESP32_V0.h>    
 #include <SmartMatrix.h>
 #include <WiFi.h>
@@ -8,10 +12,17 @@
 const char* ssid     = "SSID GOES HERE";
 const char* password = "WIFI PASSWORD GOES HERE";
 
-String bitcoin_url = "http://[ADDRESS OF PYTHON SERVER]/bitcoin";
-String ethereum_url = "http://[ADDRESS OF PYTHON SERVER]/ethereum";
-String litecoin_url = "http://[ADDRESS OF PYTHON SERVER]/litecoin";
-String monero_url = "http://[ADDRESS OF PYTHON SERVER]/monero";
+int page = 1;
+int loop_counter = 0;
+
+String bitcoin_url = "http://[ADDRESS OF PYTHON SERVER]:5000/bitcoin";
+String ethereum_url = "http://[ADDRESS OF PYTHON SERVER]:5000/ethereum";
+String litecoin_url = "http://[ADDRESS OF PYTHON SERVER]:5000/litecoin";
+String monero_url = "http://[ADDRESS OF PYTHON SERVER]:5000/monero";
+String stellar_url = "http://[ADDRESS OF PYTHON SERVER]:5000/stellar";
+String ada_url = "http://[ADDRESS OF PYTHON SERVER]:5000/cardano";
+String tezos_url = "http://[ADDRESS OF PYTHON SERVER]:5000/tezos";
+String dogecoin_url = "http://[ADDRESS OF PYTHON SERVER]:5000/dogecoin";
 
 HTTPClient http;
 
@@ -28,6 +39,10 @@ volatile char bitcoin[20];
 volatile char ethereum[20];
 volatile char litecoin[20];
 volatile char monero[20];
+volatile char stellar[20];
+volatile char ada[20];
+volatile char tezos[20];
+volatile char dogecoin[20];
 
 SMARTMATRIX_ALLOCATE_BUFFERS(matrix, kMatrixWidth, kMatrixHeight, kRefreshDepth, kDmaBufferRows, kPanelType, kMatrixOptions);
 SMARTMATRIX_ALLOCATE_INDEXED_LAYER(indexedLayer1, kMatrixWidth, kMatrixHeight, COLOR_DEPTH, kIndexedLayerOptions);
@@ -133,38 +148,141 @@ void loop() {
     Serial.println((char *)monero);
   }
   else {
-    Serial.print("Error code while getting ltc price: ");
+    Serial.print("Error code while getting monero price: ");
     Serial.println(httpResponseCode);
   }
   http.end();
-  
-  char  * txtBuffer = new char[20];
-  sprintf(txtBuffer, "BTC: %s", bitcoin);
-  indexedLayer1.setFont(font5x7);
-  indexedLayer1.setIndexedColor(1,{0xfc, 0x05, 0xbe});
-  indexedLayer1.drawString(0, 1, 1, txtBuffer);
-  indexedLayer1.swapBuffers();
-  
-  txtBuffer = new char[20];
-  sprintf(txtBuffer, "ETH: %s", ethereum);
-  indexedLayer2.setFont(font5x7);
-  indexedLayer2.setIndexedColor(1,{0x00, 0xf7, 0xca});
-  indexedLayer2.drawString(0, 9, 1, txtBuffer);
-  indexedLayer2.swapBuffers();
-  
-  txtBuffer = new char[20];
-  sprintf(txtBuffer, "LTC: %s", litecoin);
-  indexedLayer3.setFont(font5x7);
-  indexedLayer3.setIndexedColor(1,{0xe8, 0xe8, 0xe8});
-  indexedLayer3.drawString(0, 17, 1, txtBuffer); 
-  indexedLayer3.swapBuffers();
 
-  txtBuffer = new char[20];
-  sprintf(txtBuffer, "XMR: %s", monero);
-  indexedLayer4.setFont(font5x7);
-  indexedLayer4.setIndexedColor(1,{0xfc, 0x05, 0x91});
-  indexedLayer4.drawString(0, 25, 1, txtBuffer); 
-  indexedLayer4.swapBuffers();
+  http.begin(stellar_url.c_str());
+  httpResponseCode = http.GET();
+  
+  if (httpResponseCode>0) {
+    String response = http.getString();
+    for (int iterate = 0; iterate < (sizeof(response.c_str())/sizeof(response.c_str()[0])) + 3; iterate++){
+      stellar[iterate] = response.c_str()[iterate];
+    }
+    Serial.print("Stellar price acquired:");
+    Serial.println((char *)stellar);
+  }
+  else {
+    Serial.print("Error code while getting stellar price: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
 
+
+  http.begin(ada_url.c_str());
+  httpResponseCode = http.GET();
+  
+  if (httpResponseCode>0) {
+    String response = http.getString();
+    for (int iterate = 0; iterate < (sizeof(response.c_str())/sizeof(response.c_str()[0])) + 3; iterate++){
+      ada[iterate] = response.c_str()[iterate];
+    }
+    Serial.print("Ada price acquired:");
+    Serial.println((char *)ada);
+  }
+  else {
+    Serial.print("Error code while getting ada price: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
+
+
+  http.begin(tezos_url.c_str());
+  httpResponseCode = http.GET();
+  
+  if (httpResponseCode>0) {
+    String response = http.getString();
+    for (int iterate = 0; iterate < (sizeof(response.c_str())/sizeof(response.c_str()[0])) + 3; iterate++){
+      tezos[iterate] = response.c_str()[iterate];
+    }
+    Serial.print("tezos price acquired:");
+    Serial.println((char *)tezos);
+  }
+  else {
+    Serial.print("Error code while getting tezos price: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
+
+  http.begin(dogecoin_url.c_str());
+  httpResponseCode = http.GET();
+  
+  if (httpResponseCode>0) {
+    String response = http.getString();
+    for (int iterate = 0; iterate < (sizeof(response.c_str())/sizeof(response.c_str()[0])) + 3; iterate++){
+      dogecoin[iterate] = response.c_str()[iterate];
+    }
+    Serial.print("Doge price acquired:");
+    Serial.println((char *)dogecoin);
+  }
+  else {
+    Serial.print("Error code while getting doge price: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
+
+  if(page == 1){
+    char  * txtBuffer = new char[20];
+    sprintf(txtBuffer, "BTC: %s", bitcoin);
+    indexedLayer1.setFont(font5x7);
+    indexedLayer1.setIndexedColor(1,{0xfc, 0x05, 0xbe});
+    indexedLayer1.drawString(0, 1, 1, txtBuffer);
+    indexedLayer1.swapBuffers();
+    
+    txtBuffer = new char[20];
+    sprintf(txtBuffer, "ETH: %s", ethereum);
+    indexedLayer2.setFont(font5x7);
+    indexedLayer2.setIndexedColor(1,{0x00, 0xf7, 0xca});
+    indexedLayer2.drawString(0, 9, 1, txtBuffer);
+    indexedLayer2.swapBuffers();
+    
+    txtBuffer = new char[20];
+    sprintf(txtBuffer, "LTC: %s", litecoin);
+    indexedLayer3.setFont(font5x7);
+    indexedLayer3.setIndexedColor(1,{0xe8, 0xe8, 0xe8});
+    indexedLayer3.drawString(0, 17, 1, txtBuffer); 
+    indexedLayer3.swapBuffers();
+  
+    txtBuffer = new char[20];
+    sprintf(txtBuffer, "XMR: %s", monero);
+    indexedLayer4.setFont(font5x7);
+    indexedLayer4.setIndexedColor(1,{0xfc, 0x05, 0x91});
+    indexedLayer4.drawString(0, 25, 1, txtBuffer); 
+    indexedLayer4.swapBuffers();
+    page = 2;
+  }
+  else if (page == 2){
+    char  * txtBuffer = new char[20];
+    sprintf(txtBuffer, "XLM: %s", stellar);
+    indexedLayer1.setFont(font5x7);
+    indexedLayer1.setIndexedColor(1,{0xe8, 0xe8, 0xe8});
+    indexedLayer1.drawString(0, 1, 1, txtBuffer);
+    indexedLayer1.swapBuffers();
+    
+    txtBuffer = new char[20];
+    sprintf(txtBuffer, "ADA: %s", ada);
+    indexedLayer2.setFont(font5x7);
+    indexedLayer2.setIndexedColor(1,{0x00, 0xad, 0x0e});
+    indexedLayer2.drawString(0, 9, 1, txtBuffer);
+    indexedLayer2.swapBuffers();
+    
+    txtBuffer = new char[20];
+    sprintf(txtBuffer, "XTZ: %s", tezos);
+    indexedLayer3.setFont(font5x7);
+    indexedLayer3.setIndexedColor(1,{0x02, 0xd3, 0x13});
+    indexedLayer3.drawString(0, 17, 1, txtBuffer); 
+    indexedLayer3.swapBuffers();
+  
+    txtBuffer = new char[20];
+    sprintf(txtBuffer, "DOGE: %s", dogecoin);
+    indexedLayer4.setFont(font5x7);
+    indexedLayer4.setIndexedColor(1,{0xd3, 0x02, 0xc2});
+    indexedLayer4.drawString(0, 25, 1, txtBuffer); 
+    indexedLayer4.swapBuffers();
+    
+    page = 1;
+  }
   delay(10000);
 }
